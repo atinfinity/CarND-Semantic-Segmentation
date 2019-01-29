@@ -59,24 +59,29 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     regularized_l2_scale = 1e-3
 
     # Convolutional 1x1 to mantain space information.
-    conv_1x1_layer7 = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, padding='same',
+    conv_1x1_layer7 = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, padding='same', 
+                                       kernel_initializer=tf.random_normal_initializer(stddev=0.01), 
                                        kernel_regularizer=tf.contrib.layers.l2_regularizer(regularized_l2_scale))
     # Upsample deconvolution x 2
-    first_upsamplex2 = tf.layers.conv2d_transpose(conv_1x1_layer7, num_classes, 4, strides=(2, 2), padding='same',
+    first_upsamplex2 = tf.layers.conv2d_transpose(conv_1x1_layer7, num_classes, 4, strides=(2, 2), padding='same', 
+                                                  kernel_initializer=tf.random_normal_initializer(stddev=0.01), 
                                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(regularized_l2_scale))
     conv_1x1_layer4 = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, padding='same',
                                        kernel_regularizer=tf.contrib.layers.l2_regularizer(regularized_l2_scale))
     # Adding skip layer.
     first_skip = tf.add(first_upsamplex2, conv_1x1_layer4, name='first_skip')
     # Upsample deconvolutions x 2.
-    second_upsamplex2 = tf.layers.conv2d_transpose(first_skip, num_classes, 4, strides=(2, 2), padding='same',
+    second_upsamplex2 = tf.layers.conv2d_transpose(first_skip, num_classes, 4, strides=(2, 2), padding='same', 
+                                                   kernel_initializer=tf.random_normal_initializer(stddev=0.01), 
                                                    kernel_regularizer=tf.contrib.layers.l2_regularizer(regularized_l2_scale))
-    conv_1x1_layer3 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, padding='same',
+    conv_1x1_layer3 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, padding='same', 
+                                       kernel_initializer=tf.random_normal_initializer(stddev=0.01), 
                                        kernel_regularizer=tf.contrib.layers.l2_regularizer(regularized_l2_scale))
     # Adding skip layer.
     second_skip = tf.add(second_upsamplex2, conv_1x1_layer3, name='second_skip')
     # Upsample deconvolution x 8.
-    third_upsamplex8 = tf.layers.conv2d_transpose(second_skip, num_classes, 16, strides=(8, 8), padding='same',
+    third_upsamplex8 = tf.layers.conv2d_transpose(second_skip, num_classes, 16, strides=(8, 8), padding='same', 
+                                                  kernel_initializer=tf.random_normal_initializer(stddev=0.01), 
                                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(regularized_l2_scale))
     return third_upsamplex8
 tests.test_layers(layers)
@@ -175,7 +180,7 @@ def run():
                  correct_label, keep_prob, learning_rate)
 
         # TODO: Save inference data using helper.save_inference_samples
-        #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
+        helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, image_input)
 
         # OPTIONAL: Apply the trained model to a video
 
