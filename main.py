@@ -134,7 +134,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                                     input_image: image,
                                     correct_label: label,
                                     keep_prob: 0.5,
-                                    learning_rate: 0.00001
+                                    learning_rate: 0.0009
                                 })
             print("  loss = {:.3f}".format(loss))
         print()
@@ -173,7 +173,7 @@ def run():
         logits, train_op, cross_entropy_loss = optimize(layer_output, correct_label, learning_rate, num_classes)
 
         # TODO: Train NN using the train_nn function
-        epochs = 6
+        epochs = 12
         batch_size = 5
 
         train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, image_input, 
