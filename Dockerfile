@@ -38,6 +38,7 @@ RUN conda install -y python=${python_version} && \
       matplotlib \
       mkdocs \
       mkl \
+      moviepy \
       nose \
       notebook \
       opencv \
