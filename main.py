@@ -198,7 +198,7 @@ def run():
         # OPTIONAL: Apply the trained model to a video
         result_image_list = sorted(glob.glob(output_dir + '/*.png'))
         clip = ImageSequenceClip(result_image_list, fps=5)
-        clip.write_videofile('output.mp4')
+        clip.write_videofile('output_epoch' + str(args.epoch) + '.mp4')
 
 
 if __name__ == '__main__':
