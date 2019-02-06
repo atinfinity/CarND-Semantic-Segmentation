@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os.path
 import tensorflow as tf
+import argparse
 import helper
 import warnings
 from distutils.version import LooseVersion
@@ -55,7 +56,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :param num_classes: Number of classes to classify
     :return: The Tensor for the last layer of output
     """
-    # TODO: Implement function
+    # Implement function
     regularized_l2_scale = 1e-3
 
     # Convolutional 1x1 to mantain space information.
@@ -70,6 +71,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
                                        kernel_regularizer=tf.contrib.layers.l2_regularizer(regularized_l2_scale))
     # Adding skip layer.
     first_skip = tf.add(first_upsamplex2, conv_1x1_layer4, name='first_skip')
+
     # Upsample deconvolutions x 2.
     second_upsamplex2 = tf.layers.conv2d_transpose(first_skip, num_classes, 4, strides=(2, 2), padding='same', 
                                                    kernel_initializer=tf.random_normal_initializer(stddev=0.01), 
@@ -79,6 +81,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
                                        kernel_regularizer=tf.contrib.layers.l2_regularizer(regularized_l2_scale))
     # Adding skip layer.
     second_skip = tf.add(second_upsamplex2, conv_1x1_layer3, name='second_skip')
+
     # Upsample deconvolution x 8.
     third_upsamplex8 = tf.layers.conv2d_transpose(second_skip, num_classes, 16, strides=(8, 8), padding='same', 
                                                   kernel_initializer=tf.random_normal_initializer(stddev=0.01), 
@@ -96,10 +99,10 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     :param num_classes: Number of classes to classify
     :return: Tuple of (logits, train_op, cross_entropy_loss)
     """
-    # TODO: Implement function
+    # Implement function
     logits = tf.reshape(nn_last_layer, (-1, num_classes))
     correct_label = tf.reshape(correct_label, (-1, num_classes))
-    cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=correct_label))
+    cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits, labels=correct_label))
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
     train_op = optimizer.minimize(cross_entropy_loss)
 
@@ -122,11 +125,13 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param keep_prob: TF Placeholder for dropout keep probability
     :param learning_rate: TF Placeholder for learning rate
     """
-    # TODO: Implement function
+    # Implement function
     sess.run(tf.global_variables_initializer())
 
+    loss_per_epoch = []
+
     for epoch in range(epochs):
-        print('Epoch : {}'.format(epoch + 1))
+        losses = []
         for image, label in get_batches_fn(batch_size):
             # training
             _, loss = sess.run([train_op, cross_entropy_loss],
@@ -136,12 +141,21 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                                     keep_prob: 0.5,
                                     learning_rate: 0.0009
                                 })
-            print("  loss = {:.3f}".format(loss))
-        print()
+            losses.append(loss)
+        training_loss = sum(losses) / len(losses)
+        loss_per_epoch.append(training_loss)
+        print(" [-] epoch: %d/%d, loss: %.5f" % (epoch+1, epochs, training_loss))
+
 tests.test_train_nn(train_nn)
 
 
 def run():
+    # parse option
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--epoch', '-e', type=int, default=6, help='epoch')
+    parser.add_argument('--batchsize', '-b', type=int, default=8, help='batchsize')
+    args = parser.parse_args()
+
     num_classes = 2
     image_shape = (160, 576)  # KITTI dataset uses 160x576 images
     data_dir = './data'
@@ -167,19 +181,16 @@ def run():
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes], name='correct_label')
         learning_rate = tf.placeholder(tf.float32, name='learning_rate')
 
-        # TODO: Build NN using load_vgg, layers, and optimize function
+        # Build NN using load_vgg, layers, and optimize function
         image_input, keep_prob, layer3_out, layer4_out, layer7_out = load_vgg(sess, vgg_path)
         layer_output = layers(layer3_out, layer4_out, layer7_out, num_classes)
         logits, train_op, cross_entropy_loss = optimize(layer_output, correct_label, learning_rate, num_classes)
 
-        # TODO: Train NN using the train_nn function
-        epochs = 48
-        batch_size = 8
-
-        train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, image_input, 
+        # Train NN using the train_nn function
+        train_nn(sess, args.epoch, args.batchsize, get_batches_fn, train_op, cross_entropy_loss, image_input, 
                  correct_label, keep_prob, learning_rate)
 
-        # TODO: Save inference data using helper.save_inference_samples
+        # Save inference data using helper.save_inference_samples
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, image_input)
 
         # OPTIONAL: Apply the trained model to a video
