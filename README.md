@@ -11,6 +11,7 @@ Make sure you have the following is installed:
  - [TensorFlow](https://www.tensorflow.org/)
  - [NumPy](http://www.numpy.org/)
  - [SciPy](https://www.scipy.org/)
+ - [MoviePy](https://zulko.github.io/moviepy/)
 
 You may also need [Python Image Library (PIL)](https://pillow.readthedocs.io/) for SciPy's `imresize` function.
 
@@ -21,6 +22,7 @@ Download the [Kitti Road dataset](http://www.cvlibs.net/datasets/kitti/eval_road
 ##### Implement
 Implement the code in the `main.py` module indicated by the "TODO" comments.
 The comments indicated with "OPTIONAL" tag are not required to complete.
+
 ##### Run
 Run the following command to run the project:
 ```
@@ -43,6 +45,21 @@ Sufficient Result          |  Insufficient Result
  - `main.py`
  - `project_tests.py`
  - Newest inference images from `runs` folder  (**all images from the most recent run**)
+
+### Materials
+ - [main.py](https://github.com/atinfinity/CarND-Semantic-Segmentation/blob/master/main.py)
+ - [helper.py](https://github.com/atinfinity/CarND-Semantic-Segmentation/blob/master/helper.py)
+
+### Optional Materials
+#### Dockerfile
+ - [Dockerfile](https://github.com/atinfinity/CarND-Semantic-Segmentation/blob/master/Dockerfile)
+
+#### Movies
+ - [output_epoch1.mp4](https://github.com/atinfinity/CarND-Semantic-Segmentation/blob/master/output_videos/output_epoch1.mp4) (Inference: Training 1epoch)
+ - [output_epoch5.mp4](https://github.com/atinfinity/CarND-Semantic-Segmentation/blob/master/output_videos/output_epoch5.mp4) (Inference: Training 5epoch)
+ - [output_epoch10.mp4](https://github.com/atinfinity/CarND-Semantic-Segmentation/blob/master/output_videos/output_epoch10.mp4) (Inference: Training 10epoch)
+ - [output_epoch20.mp4](https://github.com/atinfinity/CarND-Semantic-Segmentation/blob/master/output_videos/output_epoch20.mp4) (Inference: Training 20epoch)
+ - [output_epoch40.mp4](https://github.com/atinfinity/CarND-Semantic-Segmentation/blob/master/output_videos/output_epoch40.mp4) (Inference: Training 40epoch)
  
 ### Tips
 - The link for the frozen `VGG16` model is hardcoded into `helper.py`.  The model can be found [here](https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/vgg.zip).
